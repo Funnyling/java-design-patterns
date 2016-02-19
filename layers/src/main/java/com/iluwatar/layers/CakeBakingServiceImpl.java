@@ -77,9 +77,7 @@ public class CakeBakingServiceImpl implements CakeBakingService {
 	private List<CakeTopping> getAvailableToppingEntities() {
 		CakeToppingDao bean = context.getBean(CakeToppingDao.class);
 		List<CakeTopping> result = new ArrayList<>();
-		Iterator<CakeTopping> iterator = bean.findAll().iterator();
-		while (iterator.hasNext()) {
-			CakeTopping topping = iterator.next();
+		for (CakeTopping topping : bean.findAll()) {
 			if (topping.getCake() == null) {
 				result.add(topping);
 			}
@@ -91,9 +89,7 @@ public class CakeBakingServiceImpl implements CakeBakingService {
 	public List<CakeToppingInfo> getAvailableToppings() {
 		CakeToppingDao bean = context.getBean(CakeToppingDao.class);
 		List<CakeToppingInfo> result = new ArrayList<>();
-		Iterator<CakeTopping> iterator = bean.findAll().iterator();
-		while (iterator.hasNext()) {
-			CakeTopping next = iterator.next();
+		for (CakeTopping next : bean.findAll()) {
 			if (next.getCake() == null) {
 				result.add(new CakeToppingInfo(next.getId(), next.getName(), next.getCalories()));
 			}
@@ -104,9 +100,7 @@ public class CakeBakingServiceImpl implements CakeBakingService {
 	private List<CakeLayer> getAvailableLayerEntities() {
 		CakeLayerDao bean = context.getBean(CakeLayerDao.class);
 		List<CakeLayer> result = new ArrayList<>();
-		Iterator<CakeLayer> iterator = bean.findAll().iterator();
-		while (iterator.hasNext()) {
-			CakeLayer next = iterator.next();
+		for (CakeLayer next : bean.findAll()) {
 			if (next.getCake() == null) {
 				result.add(next);
 			}
@@ -118,9 +112,7 @@ public class CakeBakingServiceImpl implements CakeBakingService {
 	public List<CakeLayerInfo> getAvailableLayers() {
 		CakeLayerDao bean = context.getBean(CakeLayerDao.class);
 		List<CakeLayerInfo> result = new ArrayList<>();
-		Iterator<CakeLayer> iterator = bean.findAll().iterator();
-		while (iterator.hasNext()) {
-			CakeLayer next = iterator.next();
+		for (CakeLayer next : bean.findAll()) {
 			if (next.getCake() == null) {
 				result.add(new CakeLayerInfo(next.getId(), next.getName(), next.getCalories()));
 			}
@@ -132,15 +124,10 @@ public class CakeBakingServiceImpl implements CakeBakingService {
 	public List<CakeInfo> getAllCakes() {
 		CakeDao cakeBean = context.getBean(CakeDao.class);
 		List<CakeInfo> result = new ArrayList<>();
-		Iterator<Cake> iterator = cakeBean.findAll().iterator();
-		while (iterator.hasNext()) {
-			Cake cake = iterator.next();
+		for (Cake cake : cakeBean.findAll()) {
 			CakeToppingInfo cakeToppingInfo = new CakeToppingInfo(cake.getTopping().getId(),
 					cake.getTopping().getName(), cake.getTopping().getCalories());
-			ArrayList<CakeLayerInfo> cakeLayerInfos = new ArrayList<CakeLayerInfo>();
-			for (CakeLayer layer: cake.getLayers()) {
-				cakeLayerInfos.add(new CakeLayerInfo(layer.getId(), layer.getName(), layer.getCalories()));
-			}
+			ArrayList<CakeLayerInfo> cakeLayerInfos = cake.getLayers().stream().map(layer -> new CakeLayerInfo(layer.getId(), layer.getName(), layer.getCalories())).collect(Collectors.toCollection(ArrayList::new));
 			CakeInfo cakeInfo = new CakeInfo(cake.getId(), cakeToppingInfo, cakeLayerInfos);
 			result.add(cakeInfo);
 		}
